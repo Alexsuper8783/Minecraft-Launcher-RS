@@ -1,4 +1,5 @@
 pub mod version_manifest {
+    #[derive(Clone, Copy, PartialEq, Eq)]
     pub enum VersionType {
         Release,
         Snapshot,
@@ -18,8 +19,17 @@ pub mod version_manifest {
                 return VersionType::Alpha;
             }
         }
+        pub fn to_string(&self) -> String {
+            match self {
+                VersionType::Release => "release".to_string(),
+                VersionType::Snapshot => "snapshot".to_string(),
+                VersionType::Beta => "beta".to_string(),
+                VersionType::Alpha => "alpha".to_string()
+            }
+        }
     }
     
+    #[derive(Clone, PartialEq, Eq)]
     pub struct Version {
         pub id: String,
         pub version_type: VersionType,
@@ -43,6 +53,7 @@ pub mod version_manifest {
         }
     }
     
+    #[derive(Clone, PartialEq, Eq)]
     pub struct VersionManifest {
         pub latest_release: Version,
         pub latest_snapshot: Version,
@@ -65,7 +76,10 @@ pub mod version_manifest {
 }
 
 pub mod version {
+    pub use super::version_manifest::VersionType;
+    
     pub mod rule {
+        #[derive(Clone, PartialEq, Eq)]
         pub enum RuleOS {
             Name,
             Arch,
@@ -84,6 +98,7 @@ pub mod version {
             }
         }
         
+        #[derive(Clone, PartialEq, Eq)]
         pub enum Action {
             Allow,
             Disallow
@@ -99,6 +114,7 @@ pub mod version {
             }
         }
         
+        #[derive(Clone, PartialEq, Eq)]
         pub struct Rule {
             pub action: Action,
             pub os: Vec<(RuleOS, String)>
@@ -113,6 +129,126 @@ pub mod version {
                     action,
                     os 
                 }
+            }
+        }
+    }
+    
+    #[derive(Clone, PartialEq, Eq)]
+    pub struct Library {
+        pub path: String,
+        pub sha1: String,
+        pub size: u64,
+        pub url: String,
+        pub extract: String
+    }
+    
+    impl Library {
+        pub fn new(
+            path: String,
+            sha1: String,
+            size: u64,
+            url: String,
+            extract: String
+        ) -> Library {
+            Library {
+                path,
+                sha1,
+                size,
+                url, 
+                extract
+            }
+        }
+    }
+    
+    #[derive(Clone, PartialEq, Eq)]
+    pub struct Asset {
+        pub hash: String,
+        pub size: u64,
+        pub path: String
+    }
+    
+    impl Asset {
+        pub fn new(
+            hash: String,
+            size: u64,
+            path: String 
+        ) -> Asset {
+            Asset { 
+                hash,
+                size,
+                path
+            }
+        }
+    }
+    
+    #[derive(Clone, PartialEq, Eq)]
+    pub struct Client {
+        pub sha1: String,
+        pub size: u64,
+        pub url: String
+    }
+    
+    impl Client {
+        pub fn new(
+            sha1: String,
+            size: u64,
+            url: String
+        ) -> Client {
+            Client {
+                sha1,
+                size,
+                url
+            }
+        }
+    }
+    
+    #[derive(Clone, PartialEq, Eq)]
+    pub struct Java {
+        pub name: String,
+        pub version: u16
+    }
+    
+    impl Java {
+        pub fn new(
+            name: String,
+            version: u16
+        ) -> Java {
+            Java {
+                name,
+                version
+            }
+        }
+    }
+    
+    #[derive(Clone, PartialEq, Eq)]
+    pub struct Version {
+        pub id: String,
+        pub version_type: VersionType,
+        pub release_time: String,
+        pub libraries: Vec<Library>,
+        pub assets: Vec<Asset>,
+        pub client: Client,
+        pub java: Java
+    }
+    
+    impl Version {
+        pub fn new(
+            id: String,
+            version_type: VersionType,
+            release_time: String,
+            libraries: Vec<Library>,
+            assets: Vec<Asset>,
+            client: Client,
+            java: Java
+        ) -> Version {
+            Version {
+                id,
+                version_type,
+                release_time,
+                libraries,
+                assets,
+                client,
+                java
             }
         }
     }
